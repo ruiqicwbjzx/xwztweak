@@ -1,141 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Navigation with Snowfall</title>
+    <title>常用脚本转换代码 URLs</title>
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
+        * {
+            box-sizing: border-box;
         }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            flex-direction: column;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            /* 设置背景图片 */
+            background: url('https://n.sinaimg.cn/sinakd20113/560/w1080h1080/20220505/a2a5-5911bca503d5ac213bd92772f90d3936.jpg') no-repeat center center fixed;
+            background-size: cover; /* 背景图像覆盖整个屏幕 */
         }
+
         .container {
-            text-align: center;
-            padding: 30px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            max-width: 800px;
-            width: 100%; 
-            margin-top: 20px;
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* 容器背景色，设置为白色并带有透明度 */
+            border-radius: 8px; /* 圆角 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
         }
+
         h1 {
+            text-align: center;
+            color: #333; /* 标题颜色 */
+        }
+
+        .time, .visitor-count {
+            text-align: center;
             margin-bottom: 20px;
-            color: #333;
-            font-size: 24px;
-            font-weight: bold;
+            color: #666; /* 文字颜色 */
         }
-        .time {
-            margin-bottom: 30px;
-            font-size: 18px;
-            color: #555;
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap; /* 允许换行 */
+            justify-content: center; /* 居中对齐按钮 */
         }
-        .visitor-count {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #555;
-        }
+
         .button {
-            display: block;
-            margin: 10px auto;
-            padding: 15px 30px;
-            font-size: 18px;
-            color: #ffffff;
-            background: linear-gradient(45deg, #007bff, #0056b3);
+            background-color: #4CAF50; /* 绿色背景 */
+            color: white; /* 白色文字 */
+            padding: 15px 20px;
+            margin: 10px; /* 按钮之间的间距 */
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 5px;
             text-decoration: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            max-width: 300px;
-            width: 100%; 
+            font-size: 16px;
+            transition: background-color 0.3s;
+            flex: 1 1 calc(30% - 20px); /* 默认按钮宽度 */
+            max-width: calc(30% - 20px); /* 最大宽度 */
         }
+
         .button:hover {
-            background: linear-gradient(45deg, #0056b3, #003d7a);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-            transform: translateY(-2px);
+            background-color: #45a049; /* 悬停时的背景色 */
         }
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            width: 10px;
-            height: 10px;
-            background: red; 
-            opacity: 0.9;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: fall linear;
+
+        /* 响应式设计 */
+        @media (max-width: 800px) {
+            .button {
+                flex: 1 1 calc(45% - 20px); /* 针对小屏幕调整按钮的宽度 */
+            }
         }
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
+
+        @media (max-width: 500px) {
+            .button {
+                flex: 1 1 100%; /* 在超小屏幕上按钮占满整行 */
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>常用脚本转换代码 URLs</h1>
-        <div class="time" id="currentTime"></div>
-        <div class="visitor-count" id="visitorCount"></div>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/iTunes-objc.html" class="button" target="_blank">iTunes-objc脚本转换</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/script-objc.html" class="button" target="_blank">script-objc</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/iTunes.html" class="button" target="_blank">Go to iTunes</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/HttpAsynConnection.html" class="button" target="_blank">HttpAsynConnection</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/verifyReceipt.html" class="button" target="_blank">verifyReceipt</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/objc.html" class="button" target="_blank">json数据转objc</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/SessionDelegate.html" class="button" target="_blank">SessionDelegate</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/AFURLSessionManager.html" class="button" target="_blank">AFURLSessionManager</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/AFHTTPRequestOperation.html" class="button" target="_blank">AFHTTPRequestOperation</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/requestheader.html" class="button" target="_blank">请求头参数替换脚本</a>
-        <a href="https://ruiqicwbjzx.github.io/xwztweak/Scriptsautomatic.html" class="button" target="_blank">脚本自动转换</a>
-         <a href="https://ruiqicwbjzx.github.io/xwztweak/adapty.html" class="button" target="_blank">adapty脚本生成</a>
+        <h1>常用脚本转换代码</h1>
+        <div class="time" id="currentTime">当前时间: <span id="time"></span></div>
+        <div class="visitor-count" id="visitorCount">访问者人数: <span id="visitorNumber">0</span></div>
+        <div class="button-container">
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/iTunes-objc.html" class="button" target="_blank">iTunes-objc脚本转换</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/script-objc.html" class="button" target="_blank">script-objc</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/iTunes.html" class="button" target="_blank">Go to iTunes</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/HttpAsynConnection.html" class="button" target="_blank">HttpAsynConnection</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/verifyReceipt.html" class="button" target="_blank">verifyReceipt</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/objc.html" class="button" target="_blank">json数据转objc</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/SessionDelegate.html" class="button" target="_blank">SessionDelegate</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/AFURLSessionManager.html" class="button" target="_blank">AFURLSessionManager</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/AFHTTPRequestOperation.html" class="button" target="_blank">AFHTTPRequestOperation</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/requestheader.html" class="button" target="_blank">请求头参数替换脚本</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/Scriptsautomatic.html" class="button" target="_blank">脚本自动转换</a>
+            <a href="https://ruiqicwbjzx.github.io/xwztweak/adapty.html" class="button" target="_blank">adapty脚本生成</a>
+        </div>
     </div>
 
     <script>
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snowflake';
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
-            snowflake.style.opacity = Math.random() * 0.5 + 0.5;
-            document.body.appendChild(snowflake);
-
-            snowflake.addEventListener('animationend', () => {
-                document.body.removeChild(snowflake);
-            });
-        }
-
+        // 获取当前时间
         function updateTime() {
             const now = new Date();
-            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString(undefined, options);
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            document.getElementById('time').innerText = now.toLocaleString('zh-CN', options);
         }
 
+        // 更新访问者人数
+        let visitorCount = 0;
         function updateVisitorCount() {
-            let count = localStorage.getItem('visitCount') || 0;
-            count++;
-            localStorage.setItem('visitCount', count);
-            document.getElementById('visitorCount').textContent = `Visitors today: ${count}`;
+            visitorCount++;
+            document.getElementById('visitorNumber').innerText = visitorCount;
         }
 
-        setInterval(createSnowflake, 100);
-        setInterval(updateTime, 1000);
-        updateTime(); 
-        updateVisitorCount(); 
+        // 初始化
+        updateTime();
+        updateVisitorCount();
+        setInterval(updateTime, 1000); // 每秒更新时间
     </script>
 </body>
 </html>
