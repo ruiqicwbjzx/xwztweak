@@ -13,9 +13,8 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            /* 设置背景图片 */
             background: url('https://n.sinaimg.cn/sinakd20113/560/w1080h1080/20220505/a2a5-5911bca503d5ac213bd92772f90d3936.jpg') no-repeat center center fixed;
-            background-size: cover; /* 背景图像覆盖整个屏幕 */
+            background-size: cover; 
         }
 
         .container {
@@ -23,56 +22,62 @@
             max-width: 1200px;
             margin: auto;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8); /* 容器背景色，设置为白色并带有透明度 */
-            border-radius: 8px; /* 圆角 */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+            background-color: rgba(255, 255, 255, 0.8); 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
         }
 
         h1 {
             text-align: center;
-            color: #333; /* 标题颜色 */
+            color: #333; 
         }
 
         .time, .visitor-count {
             text-align: center;
             margin-bottom: 20px;
-            color: #666; /* 文字颜色 */
+            color: #666; 
         }
 
         .button-container {
             display: flex;
-            flex-wrap: wrap; /* 允许换行 */
-            justify-content: center; /* 居中对齐按钮 */
+            flex-wrap: wrap; 
+            justify-content: center; 
         }
 
         .button {
-            background-color: #4CAF50; /* 绿色背景 */
-            color: white; /* 白色文字 */
-            padding: 15px 20px;
-            margin: 10px; /* 按钮之间的间距 */
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 8px 10px; /* 调整 padding */
+            margin: 10px; 
             border: none;
             border-radius: 5px;
             text-decoration: none;
-            font-size: 16px;
+            font-size: 14px; /* 降低字体大小 */
             transition: background-color 0.3s;
-            flex: 1 1 calc(30% - 20px); /* 默认按钮宽度 */
-            max-width: calc(30% - 20px); /* 最大宽度 */
+            flex: 1 1 calc(30% - 20px); 
+            max-width: calc(30% - 20px); 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; /* 防止换行 */
+            min-width: 100px; /* 设置最小宽度 */
         }
 
         .button:hover {
-            background-color: #45a049; /* 悬停时的背景色 */
+            background-color: #45a049; 
         }
 
-        /* 响应式设计 */
         @media (max-width: 800px) {
             .button {
-                flex: 1 1 calc(45% - 20px); /* 针对小屏幕调整按钮的宽度 */
+                flex: 1 1 calc(45% - 20px); 
+                font-size: 12px; /* 在小屏幕上更小的字体 */
             }
         }
 
         @media (max-width: 500px) {
             .button {
-                flex: 1 1 100%; /* 在超小屏幕上按钮占满整行 */
+                flex: 1 1 100%; 
+                padding: 6px;  /* 在小屏幕上进一步减少padding */
+                font-size: 12px; /* 小屏幕的字体大小 */
             }
         }
     </style>
@@ -99,24 +104,22 @@
     </div>
 
     <script>
-        // 获取当前时间
         function updateTime() {
             const now = new Date();
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            document.getElementById('time').innerText = now.toLocaleString('zh-CN', options);
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('time').textContent = now.toLocaleTimeString(undefined, options);
         }
 
-        // 更新访问者人数
-        let visitorCount = 0;
         function updateVisitorCount() {
-            visitorCount++;
-            document.getElementById('visitorNumber').innerText = visitorCount;
+            let count = localStorage.getItem('visitCount') || 0;
+            count++;
+            localStorage.setItem('visitCount', count);
+            document.getElementById('visitorNumber').textContent = count;
         }
 
-        // 初始化
-        updateTime();
-        updateVisitorCount();
-        setInterval(updateTime, 1000); // 每秒更新时间
+        setInterval(updateTime, 1000);
+        updateTime(); 
+        updateVisitorCount(); 
     </script>
 </body>
 </html>
