@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            margin: 10px 0;
+            padding: 8px;
+            width: 300px;
+        }
+        button {
+            padding: 10px 15px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            white-space: pre-wrap; /* Enables wrapping */
+            word-wrap: break-word; /* Ensures long words are broken */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Script Generator</h1>
+<label for="value1">Value 1:</label>
+<input type="text" id="value1" placeholder="Enter value 1 (default: premium)"><br>
+
+<label for="value2">Value 2:</label>
+<input type="text" id="value2" placeholder="Enter value 2 (default: same as value 1)"><br>
+
+<label for="value3">Value 3:</label>
+<input type="text" id="value3" placeholder="Enter value 3"><br>
+
+<label for="value4">Value 4:</label>
+<input type="text" id="value4" placeholder="Enter value 4 (default: same as value 3)"><br>
+
+<button onclick="generateScript()">Generate Script</button>
+
+<h2>Generated Script:</h2>
+<pre id="output"></pre>
+
+<script>
+function generateScript() {
+    var value1 = document.getElementById('value1').value;
+    var value2 = document.getElementById('value2').value;
+    var value3 = document.getElementById('value3').value;
+    var value4 = document.getElementById('value4').value;
+
+    if (!value1) {
+        value1 = "premium";
+    }
+
+    if (!value4) {
+        value4 = value3;
+    }
+
+    if (!value2) {
+        value2 = value1;
+    }
+
+    var script = 
+`var body = $response.body;
+var obj = JSON.parse(body);
+var header = $request.headers;
+
+obj = {
+"data": {
+"type": "adapty_analytics_profile",
+"id": $request.headers["adapty-sdk-profile-id"],
+"attributes": {
+    "app_id": "20ed8826-ed31-44ad-a0b3-43c8d360d393",
+    "profile_id" : $request.headers["adapty-sdk-profile-id"],
+    "customer_user_id": "6FCDBCBC-E369-4A1F-AE94-C898475A813C",
+    "total_revenue_usd": 0.0,
+    "segment_hash": "f29021fa71267408",
+    "paid_access_levels": {
+        "${value1}": {
+            "id": "${value2}",
+            "is_active": true,
+            "is_lifetime": false,
+            "expires_at": "9692-12-26T16:30:25.000000+0000",
+            "starts_at": null,
+            "will_renew": true,
+            "vendor_product_id": "${value4}",
+            "store": "app_store",
+            "activated_at": "2023-12-23T16:30:26.000000+0000",
+            "renewed_at": "2023-12-23T16:30:25.000000+0000",
+            "unsubscribed_at": null,
+            "billing_issue_detected_at": null,
+            "is_in_grace_period": false,
+            "active_introductory_offer_type": "free_trial",
+            "offer_id": null,
+            "active_promotional_offer_type": null,
+            "active_promotional_offer_id": null,
+            "cancellation_reason": null,
+            "is_refund": false
+        }
+    },
+    "subscriptions": {
+        "${value3}": {
+            "is_active": true,
+            "is_lifetime": false,
+            "expires_at": "9692-12-26T16:30:25.000000+0000",
+            "starts_at": null,
+            "will_renew": true,
+            "vendor_product_id":javascript
+            "${value4}",
+            "store": "app_store",
+            "activated_at": "2023-12-23T16:30:26.000000+0000",
+            "renewed_at": "2023-12-23T16:30:25.000000+0000",
+            "unsubscribed_at": null,
+            "billing_issue_detected_at": null,
+            "is_in_grace_period": false,
+            "active_introductory_offer_type": "free_trial",
+            "offer_id": null,
+            "active_promotional_offer_type": null,
+            "active_promotional_offer_id": null,
+            "cancellation_reason": null,
+            "is_refund": false
+        }
+    }
+}
+};
+
+body = JSON.stringify(obj);
+$done({body});
+`;
+
+    document.getElementById('output').textContent = script;
+}
+</script>
+
+</body>
+</html>
