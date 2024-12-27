@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="description" content="JSON to NSDictionary/NSArray Online Converter">
+    <meta name="keywords" content="JSON, NSDictionary, NSArray, Objective-C, literals, hardcode, NSObject, convert, online, Xcode, Swift, iOS, iPhone, iPad, iPod, OS X, Mac, MacBook">
+    <title>JSON to NSDictionary/NSArray Converter - Hardcoded Objective-C Object Using Literals</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <style type="text/css">
+    html, body
+    {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        border: 0;
+        padding: 0;
+        background-color: #EAEDEB;
+    }
+
+    header
+    {
+        height: 40px;
+        font-family: 'Open Sans', sans-serif;
+        font-size:20px;
+        line-height: 50px;
+        text-align:center;
+    }
+
+    textarea
+    {
+        height:100%; 
+        width:calc(50% - 5px);
+        border: 2px solid gray;
+        padding:8px;
+        float: left;
+        font-family: monospace, courier new, courier, sans-serif;
+        font-size:14px;
+        outline: none;
+        resize: none;
+        box-sizing:border-box;
+        -moz-box-sizing:border-box;
+        -webkit-box-sizing:border-box;
+    }
+
+    #container
+    {
+        width: 100%;
+        height: calc(100% - 40px);
+        padding: 10px;
+        box-sizing:border-box;
+        -moz-box-sizing:border-box;
+        -webkit-box-sizing:border-box;
+    }
+
+    #txt_output
+    {
+        margin-left:10px;
+    }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript">
+    $(window).load(function()
+    {
+        $("#txt_output").click(function()
+        {
+            var inputObject = JSON.parse($("#txt_input").val());
+            $("#txt_output").val(HardCode(inputObject,0));
+        });
+    });
+    
+    
+    function Indent(level)
+    { 
+        var indent = "    ";
+        var retval = ""; 
+        
+        while (true)
+        { 
+            if (level & 1) 
+                retval += indent; 
+            
+            level >>= 1; 
+            
+            if (level) 
+                indent += indent; 
+            else 
+                break; 
+        } 
+        
+        return retval; 
+    } 
+    
+    
+    function HardCode(obj,indent)
+    {
+        var s ="";
+               
+        if(Array.isArray(obj))                  //array
+        {
+            s = "@[\n"
+            for (var element in obj)
+               s = s + Indent(indent+1) + HardCode(obj[element],indent+1) + ",\n";
+               
+            s = s.substring(0, s.length - 2);
+            s = s + "\n" + Indent(indent) +"]";
+        }
+        else if(typeof(obj) === "object")
+        {
+            if(obj === null)                    //null
+                s = "NSNull.null";
+            else if (obj instanceof Date)       //date (treated as string)
+                s = "@\"" + obj + "\"";
+            else                                //dictionary
+            {
+                s = "@{\n"
+
+                for (var key in obj)
+                    if (obj.hasOwnProperty(key))
+                        s = s + Indent(indent+1) + "@\"" + key + "\": " + HardCode(obj[key],indent+1) + ",\n";
+            
+                s = s.substring(0, s.length - 2);
+                s = s + "\n" + Indent(indent) +"}";
+            }
+        }
+        else if(typeof(obj) === "string")       //string
+            s = "@\"" + obj + "\"";
+        else if(typeof(obj) === "number")       //number
+            s = "@" + obj;
+        else if(typeof(obj) === "boolean")      //boolean
+            s = (obj.valueOf())?"@YES":"@NO";
+        else                                    //other
+            console.log("other:" + typeof(obj));
+               
+        return s;
+    }
+    </script>
+</head>
+<body>
+    <header>JSON to NSDictionary/NSArray Converter</header>
+    <div id = "container">
+        <textarea id="txt_input" placeholder="Enter JSON here..."></textarea>
+        <textarea id="txt_output" placeholder="Click here to get hardcoded NSDictionary/NSArray"></textarea>
+    </div>
+</body>
+</html>
