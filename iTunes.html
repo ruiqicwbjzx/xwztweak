@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            width: calc(100% - 22px); /* Adjust width for padding */
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
+        #generatedScript {
+            margin-top: 20px;
+            white-space: pre-wrap; /* Preserve whitespace */
+            background-color: #f5f5f5;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto; /* Add scrollbar if necessary */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Script Generator</h1>
+    
+    <label for="value1">Bundle ID:</label>
+    <input type="text" id="value1" placeholder="Enter Bundle ID" />
+
+    <label for="value2">Product ID:</label>
+    <input type="text" id="value2" placeholder="Enter Product ID" />
+
+    <button id="generateButton">Generate Script</button>
+    <button id="darkModeToggle">Dark Mode</button>
+
+    <h2>Generated Script:</h2>
+    <div id="generatedScript"></div>
+
+    <script>
+        document.getElementById('generateButton').addEventListener('click', generateScript);
+
+        function generateScript() {
+            var value1 = document.getElementById('value1').value.trim();
+            var value2 = document.getElementById('value2').value.trim();
+
+            if (!value1 || !value2) {
+                alert('Please fill in both fields.');
+                return;
+            }
+
+            var script = 
+`var objc = JSON.parse($response.body);
+
+objc = {
+    "status" : 0,
+    "receipt" : {
+        "receipt_type" : "Production",
+        "app_item_id" : 1532875441,
+        "receipt_creation_date" : "2023-09-09 16:06:26 Etc/GMT",
+        "bundle_id" : "${value1}",
+        "original_purchase_date" : "2023-09-09 16:00:00 Etc/GMT",
+        "in_app" : [
+            {
+                "quantity" : "1",
+                "purchase_date_ms" : "1694250549000",
+                "expires_date" : "2099-09-09 09:09:09 Etc/GMT",
+                "expires_date_pst" : "2099-09-09 06:06:06 America/Los_Angeles",
+                "is_in_intro_offer_period" : "false",
+                "transaction_id" : "490001314520000",
+                "is_trial_period" : "false",
+                "original_transaction_id" : "490001314520000",
+                "purchase_date" : "2023-09-09 09:09:09 Etc/GMT",
+                "product_id" : "${value2}",
+                "original_purchase_date_pst" : "2023-09-09 02:09:10 America/Los_Angeles",
+                "in_app_ownership_type" : "PURCHASED",
+                "original_purchase_date_ms" : "1694250550000",
+                "web_order_line_item_id" : "490000123456789",
+                "expires_date_ms" : "4092599349000",
+                "purchase_date_pst" : "2023-09-09 02:09:09 America/Los_Angeles",
+                "original_purchase_date" : "2023-09-09 09:09:10 Etc/GMT"
+            }
+        ],
+        "adam_id" : 1532875441,
+        "receipt_creation_date_pst" : "2023-09-09 06:06:26 America/Los_Angeles",
+        "request_date" : "2023-09-09 16:06:27 Etc/GMT",
+        "request_date_pst" : "2023-09-09 06:06:27 America/Los_Angeles",
+        "version_external_identifier" : 861643821,
+        "request_date_ms" : "1694273635000",
+        "original_purchase_date_pst" : "2023-09-09 06:00:00 America/Los_Angeles",
+        "application_version" : "275",
+        "original_purchase_date_ms" : "1694273430000",
+        "receipt_creation_date_ms" : "1694273586000"
+    },
+    "status": 0
+};
+
+$response.body = JSON.stringify(objc);
+$done($response);
+`;
+
+            document.getElementById('generatedScript').innerText = script;
+        }
+
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            this.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+        });
+    </script>
+</body>
+</html>

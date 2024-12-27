@@ -1,0 +1,83 @@
+html                                               %hook SessionDelegate
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to Objective-C Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON to Objective-C Generator</h1>
+    <h2>Input  JSON(script-重写) Data</h2>
+    <textarea id="jsonInput"></textarea>
+    <button id="generateButton">Generate Objective-C Code</button>
+    <h2>Generated Objective-C Code</h2>
+    <pre id="objcOutput"></pre>
+
+    <script>
+        document.getElementById('generateButton').addEventListener('click', function() {
+            const jsonInput = document.getElementById('jsonInput').value;
+
+            try {
+                const data = JSON.parse(jsonInput);
+                const patterns = [];
+                const replacements = [];
+
+                data.rules.forEach(rule => {
+                    patterns.push(rule.matchValue);
+                    replacements.push(rule.value);
+                });
+
+                const objcCode = `
+#import <Foundation/Foundation.h>
+
+%hook SessionDelegate
+-(void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveData:(NSData *)data {
+    if ([task.currentRequest.URL.absoluteString containsString:@"urlstring"]) {
+        NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+        NSDictionary<NSString *, NSString *> *replacements = @{
+            ${replacements.map((replacement, index) => `"${patterns[index]}": @"${replacement}"`).join(',\n')}
+        };
+        
+        for (NSString *pattern in replacements) {
+            NSString *replacement = replacements[pattern];
+            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
+            dataString = [regex stringByReplacingMatchesInString:dataString options:0 range:NSMakeRange(0, dataString.length) withTemplate:replacement];
+        }
+        
+        data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    %orig(session, task, data);
+}
+%end
+
+%ctor {
+    %init(SessionDelegate = objc_getClass("Alamofire.SessionDelegate"));
+}
+                `.trim();
+
+                document.getElementById('objcOutput').textContent = objcCode;
+            } catch (e) {
+                document.getElementById('objcOutput').textContent = 'Error parsing JSON: ' + e.message;
+            }
+        });
+    </script>
+</body>
+</html>

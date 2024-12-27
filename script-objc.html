@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        input, button, select, textarea {
+            margin-top: 10px;
+            padding: 10px;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+        }
+        #highlightCode {
+            margin-top: 20px;
+            white-space: pre-wrap; 
+            background-color: #f5f5f5;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto; 
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Script Generator</h1>
+
+    <label for="jsonInput">Enter JSON Data:</label>
+    <textarea id="jsonInput" rows="6" placeholder='{"matchValue": "exampleString", "value": "exampleValue"}'></textarea>
+
+    <label for="codeSelect">Select Code:</label>
+    <select id="codeSelect" onchange="toggleInputs()">
+        <option value="selectCode">Select an option</option>
+        <option value="code1">Code Example 1 - NSURLSession Hook</option>
+        <option value="code2">Code Example 2 - AFURLSessionManager</option>
+        <option value="code3">Code Example 3 - Session Delegate</option>
+        <option value="code4">Code Example 4 - HttpAsynConnection</option>
+        <option value="code5">No Template Available</option>
+    </select>
+
+    <div id="additionalInputsRevCat" style="display: none;">
+        <label for="entitlement">Entitlement:</label>
+        <input type="text" id="entitlement" placeholder="Enter entitlement" />
+    </div>
+
+    <div id="additionalInputsOther" style="display: none;">
+        <label for="userCode">User Code:</label>
+        <input type="text" id="userCode" placeholder="Enter user code" />
+        <label for="productID">Product ID:</label>
+        <input type="text" id="productID" placeholder="Enter product ID" />
+    </div>
+
+    <button id="genBtn" style="display: none;" onclick="generateScript()">Generate Script</button>
+    <button id="darkModeToggle">Dark Mode</button>
+
+    <h2>Generated Script:</h2>
+    <pre id="highlightCode"></pre>
+
+    <script>
+        // Function to toggle additional inputs based on code selection
+        function toggleInputs() {
+            var selectElement = document.getElementById('codeSelect');
+            var additionalInputsRevCat = document.getElementById('additionalInputsRevCat');
+            var additionalInputsOther = document.getElementById('additionalInputsOther');
+            var userCodeInput = document.getElementById('userCode');
+            var generateButton = document.getElementById('genBtn');
+
+            generateButton.style.display = 'block';
+
+            if (selectElement.value === 'selectCode') {
+                additionalInputsOther.style.display = 'none';
+                additionalInputsRevCat.style.display = 'none';
+                userCodeInput.style.display = 'none';
+                generateButton.style.display = 'none';
+            } else if (selectElement.value === 'code1') {
+                userCodeInput.style.display = 'none';
+                additionalInputsRevCat.style.display = 'block';
+                additionalInputsOther.style.display = 'none';
+            } else if (['code2', 'code3', 'code4'].includes(selectElement.value)) {
+                additionalInputsRevCat.style.display = 'none';
+                additionalInputsOther.style.display = 'block';
+                userCodeInput.style.display = 'block';
+            } else {
+                additionalInputsRevCat.style.display = 'none';
+                userCodeInput.style.display = 'block';
+            }
+        }
+
+        // Function to generate the script based on user inputs
+        function generateScript() {
+            var selectedCode = document.getElementById('codeSelect').value;
+            var userCode = document.getElementById('userCode').value.trim();
+            var entValue = document.getElementById('entitlement').value.trim();
+            var prodIDValue = document.getElementById('productID').value.trim();
+            var jsonInput = document.getElementById('jsonInput').value.trim();
+
+            let matchValue, value;
+
+            try {
+                const jsonData = JSON.parse(jsonInput);
+                matchValue = jsonData.matchValue;
+                value = jsonData.value;
+            } catch (e) {
+                alert("Invalid JSON format! Please try again.");
+                return;
+            }
+
+            var highlightCode = '';
+
+            // Define existing codes
+            var code1 = 
+`#import <Foundation/Foundation.h>
+%hook NSURLSession
+- (id)dataTaskWithRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
+    void (^customCompletion)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (([request.URL.absoluteString containsString:@"subscribers"] || [request.URL.absoluteString containsString:@"receipt"]) && (![request.URL.absoluteString containsString:@"offerings"])) {
+            NSDictionary *dict = @{
+                @"request_date": @"2023-08-02T02:21:57Z",
+                @"request_date_ms": @1690942917283,
+                @"subscriber": @{
+                    @"entitlements": @{
+                        @"${entValue}": @{
+                            @"expires_date": @"2099-02-18T07:52:54Z",
+                            @"original_purchase_date": @"2020-02-11T07:52:55Z",
+                            @"purchase_date": @"2020-02-11T07:52:54Z",
+                            @"product_identifier": @"${prodIDValue}"
+                        }
+                    },
+                    @"first_seen": @"2023-07-27T12:47:03Z",
+                    @"last_seen": @"2023-08-02T01:57:17Z",
+                    @"management_url": NSNull.null,
+                    @"non_subscriptions": @{
+                    },
+                    @"original_app_user_id": @"70B24288-83C4-4035-B001-573285B21AE2",
+                    @"original_application_version": @"3",
+                    @"original_purchase_date": @"2023-07-26T17:04:14Z",
+                    @"other_purchases": @{
+                    },
+                    @"subscriptions": @{
+                        @"${prodIDValue}": @{
+                            @"expires_date": @"2099-02-18T07:52:54Z",
+                            @"original_purchase_date": @"2020-02-11T07:52:55Z",
+                            @"purchase_date": @"2020-02-11T07:52:54Z"
+                        }
+                    },
+                    @"entitlement": @{
+                    }
+                }
+            };
+            data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+        }
+        completionHandler(data, response, error);
+    };
+    return %orig(request, customCompletion);
+}
+%end`;
+
+            var code2 = 
+`#import <Foundation/Foundation.h>
+%hook AFURLSessionManager
+-(void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveData:(NSData *)data {
+    if ([task.currentRequest.URL.absoluteString containsString:@"${matchValue}"]) {
+        NSDictionary *dict = @{
+            @"key": "${value}"
+        };
+        data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:0];
+    }
+    %orig(session, task, data);
+}
+%end`;
+
+            var code3 = 
+`#import <Foundation/Foundation.h>
+%hook SessionDelegate
+-(void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveData:(NSData *)data {
+    if ([task.currentRequest.URL.absoluteString containsString:@"${matchValue}"]) {
+        NSDictionary *dict = @{
+            @"key": "${value}"
+        };
+        data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:0];
+    }
+    %orig(session, task, data);
+}
+%end
+%ctor {
+    %init(SessionDelegate = objc_getClass("Alamofire.SessionDelegate"));
+}`;
+
+            var code4 = 
+`#import <Foundation/Foundation.h>
+%hook HttpAsynConnection
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    NSURLRequest *originalRequest = [connection originalRequest];
+    NSString *urlString = [[originalRequest URL] absoluteString];
+    if ([urlString containsString:@"${matchValue}"]) {
+        NSDictionary *dict = @{
+            @"key": "${value}"
+        };
+        NSError *error = nil;
+        NSData *modifiedData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+        if (!error) {
+            %orig(connection, modifiedData);
+        } else {
+            %orig(connection, data);
+        }
+    } else {
+        %orig(connection, data);
+    }
+}
+%end`;
+
+            var code5 = `There isn't another template. If you have one, DM me (@D3WXY) on Telegram`;
+
+            // Select the appropriate code based on the user's selection
+            switch(selectedCode) {
+                case 'code1':
+                    highlightCode = code1;
+                    break;
+                case 'code2':
+                    highlightCode = code2;
+                    break;
+                case 'code3':
+                    highlightCode = code3;
+                    break;
+                case 'code4':
+                    highlightCode = code4;
+                    break;
+                case 'code5':
+                    highlightCode = code5;
+                    break;
+                default:
+                    highlightCode = ''; 
+            }
+
+            // Merge user's code with selected code
+            highlightCode = highlightCode.replace('"User Code HERE"', userCode);
+            highlightCode = highlightCode.replace('${entValue}', entValue);
+            highlightCode = highlightCode.replace('${prodIDValue}', prodIDValue);
+            highlightCode = highlightCode.replace('${matchValue}', matchValue);
+            highlightCode = highlightCode.replace('${value}', value);
+
+            document.getElementById('highlightCode').textContent = highlightCode;
+
+            // Copy the generated script to the clipboard
+            navigator.clipboard.writeText(highlightCode).then(function () {
+                console.log('Script copied to clipboard');
+            }, function (err) {
+                console.error('Failed to copy script: ', err);
+            });
+        }
+
+        // Check if dark mode preference is stored
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        // Function to set dark mode based on preference
+        function setDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                darkModeToggle.textContent = 'Light Mode';
+            } else {
+                body.classList.remove('dark-mode');
+                darkModeToggle.textContent = 'Dark Mode';
+            }
+        }
+
+        // Toggle dark mode and save user preference
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                darkModeToggle.textContent = 'Light Mode';
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                darkModeToggle.textContent = 'Dark Mode';
+                localStorage.setItem('darkMode', 'false');
+            }
+        }
+
+        // Call setDarkMode function to apply preference on page load
+        setDarkMode();
+
+        // Add event listener to dark mode toggle button
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+    </script>
+</body>
+</html>

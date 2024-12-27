@@ -1,0 +1,82 @@
+html                                              %hook AFURLSessionManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to Objective-C Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON to Objective-C Generator</h1>
+    
+    <h2>Input URL（path）Suffix</h2>
+    <input type="text" id="urlSuffix" placeholder="Enter URL suffix to match (e.g., GetUserInventory)" />
+
+    <h2>Input JSON（script-重写数据） Data</h2>
+    <textarea id="jsonInput"></textarea>
+    <button id="generateButton">Generate Objective-C Code</button>
+    
+    <h2>Generated Objective-C Code</h2>
+    <pre id="objcOutput"></pre>
+
+    <script>
+        document.getElementById('generateButton').addEventListener('click', function() {
+            const urlSuffix = document.getElementById('urlSuffix').value;
+            const jsonInput = document.getElementById('jsonInput').value;
+
+            try {
+                const data = JSON.parse(jsonInput);
+                const replacements = [];
+
+                data.rules.forEach(rule => {
+                    replacements.push(`@"${rule.matchValue}" : @"${rule.value}"`);
+                });
+
+                const objcCode = `
+#import <Foundation/Foundation.h>
+
+%hook AFURLSessionManager
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveData:(NSData *)data {
+    if ([task.currentRequest.URL.absoluteString containsString:@"${urlSuffix}"]) {
+        NSDictionary<NSString *, NSString *> *replacements = @{
+            ${replacements.join(',\n            ')}
+        };
+
+        NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        
+        for (NSString *key in replacements) {
+            dataString = [dataString stringByReplacingOccurrencesOfString:key withString:replacements[key] options:NSRegularExpressionSearch range:NSMakeRange(0, dataString.length)];
+        }
+
+        data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    %orig(session, task, data);
+}
+%end
+                `.trim();
+
+                document.getElementById('objcOutput').textContent = objcCode;
+            } catch (e) {
+                document.getElementById('objcOutput').textContent = 'Error parsing JSON: ' + e.message;
+            }
+        });
+    </script>
+</body>
+</html>

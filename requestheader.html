@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL和Cookie替换工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .button-container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>URL和Cookie替换工具</h1>
+<form id="replaceForm">
+    <label for="urlPrefix">输入匹配的URL路径前缀:</label>
+    <input type="text" id="urlPrefix" placeholder="例如: cdn.cmgadx.com">
+
+    <label for="host">输入匹配的host:</label>
+    <input type="text" id="host" placeholder="例如: ysp.cctv.cn">
+
+    <label for="cookieValue">输入需要替换的Cookie值:</label>
+    <input type="text" id="cookieValue" placeholder="输入Cookie值">
+
+    <div class="button-container">
+        <button type="button" onclick="generateCode()">生成代码</button>
+        <button type="button" onclick="copyToClipboard()">复制代码</button>
+    </div>
+</form>
+
+<pre id="output" style="background-color: #e9ecef; padding: 10px; border-radius: 4px;"></pre>
+
+<script>
+function generateCode() {
+    const urlPrefix = document.getElementById('urlPrefix').value;
+    const host = document.getElementById('host').value;
+    const cookieValue = document.getElementById('cookieValue').value;
+
+    const code = `
+#import <Foundation/Foundation.h>
+
+// Hook the NSURLSession class
+%hook NSURLSession
+
+// Intercept the method that creates data tasks without a completion handler
+- (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request {
+    // Create a mutable copy of the original request
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+   
+    // Check if the URL contains specific strings
+    if ([mutableRequest.URL.host containsString:@"${host}"] ||
+        [mutableRequest.URL.host containsString:@"${urlPrefix}"]) {
+        // Add the new header
+        [mutableRequest setValue:@"${cookieValue}" forHTTPHeaderField:@"Cookie"];
+    }
+
+    // Call the original method with the modified request
+    return %orig(mutableRequest);
+}
+
+// Intercept the method that creates data tasks with a completion handler
+- (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
+    // Create a mutable copy of the original request
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+    
+    // Check if the URL contains specific strings
+    if ([mutableRequest.URL.host containsString:@"${host}"] ||
+        [mutableRequest.URL.host containsString:@"${urlPrefix}"]) {
+        // Add the new header
+        [mutableRequest setValue:@"${cookieValue}" forHTTPHeaderField:@"Cookie"];
+    }
+
+    // Call the original method with the modified request
+    return %orig(mutableRequest, completionHandler);
+}
+
+%end
+    `;
+
+    document.getElementById('output').textContent = code;
+}
+
+function copyToClipboard() {
+    const output = document.getElementById('output');
+    const range = document.createRange();
+    range.selectNode(output);
+    window.getSelection().removeAllRanges(); // 清楚现有的选区
+    window.getSelection().addRange(range); // 选择代码
+    document.execCommand('copy'); // 复制
+
+    // 提示用户已复制
+    alert('代码已复制到剪贴板！');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+                hoook verifyReceipt
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objective-C Hook Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Objective-C Hook Code Generator</h1>
+    
+    <h2>Input Replacement Data (Objective-C Dictionary Format)</h2>
+    <textarea id="replacementData" placeholder='Example: @{ @"status": @0, @"message": @"success", @"content": @{ @"isVip": @1, @"vipDeadline": @"2999/09/09", @"isShow": @1 }, @"isTest": @0 }'></textarea>
+    
+    <button id="generateButton">Generate Objective-C Code</button>
+
+    <h2>Generated Objective-C Code</h2>
+    <pre id="objcOutput"></pre>
+
+    <script>
+        document.getElementById('generateButton').addEventListener('click', function() {
+            const replacementData = document.getElementById('replacementData').value.trim();
+
+            // 检查用户输入的替换数据是否为空
+            if (!replacementData) {
+                document.getElementById('objcOutput').textContent = 'Please enter the replacement data.';
+                return;
+            }
+
+            const objcCode = `
+#import <Foundation/Foundation.h>
+
+%hook NSURLSession
+
+- (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
+    void (^customCompletion)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+        if ([request.URL.absoluteString containsString:@"verifyReceipt"]) {
+            NSDictionary *dict = ${replacementData};
+
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+            completionHandler(jsonData, response, error);
+            return;
+        }
+
+        completionHandler(data, response, error);
+    };
+
+    NSURLSessionDataTask *dataTask = %orig(request, customCompletion);
+    return dataTask;
+}
+
+%end
+            `.trim();
+
+            document.getElementById('objcOutput').textContent = objcCode;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            background-color: #007bff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            white-space: pre-wrap;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        #copyButton {
+            display: block;
+            margin-top: 10px;
+            background-color: #28a745;
+        }
+        #copyButton:hover {
+            background-color: #218838;
+        }
+    </style>
+    <script>
+        function generateCode() {
+            var productId = document.getElementById('productId').value;
+            var bundleId = document.getElementById('bundleId').value;
+
+            var templateCode = `#import <Foundation/Foundation.h>
+
+%hook NSURLSession
+-(id)dataTaskWithRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler {
+ void (^customCompletion)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+    if ([request.URL.absoluteString containsString:@"verifyReceipt"]) {
+        NSDictionary *dict = @{
+            @"status": @0,
+            @"receipt": @{
+                @"receipt_type": @"Production",
+                @"app_item_id": @6476010032,
+                @"receipt_creation_date": @"2023-09-09 16:06:26 Etc/GMT",
+                @"bundle_id": @"${bundleId}",
+                @"original_purchase_date": @"2023-09-09 16:00:00 Etc/GMT",
+                @"in_app": @[
+                    @{
+                        @"quantity": @"1",
+                        @"purchase_date_ms": @"1694250549000",
+                        @"transaction_id": @"490001314520000",
+                        @"is_trial_period": @"false",
+                        @"original_transaction_id": @"490001314520000",
+                        @"purchase_date": @"2023-09-09 09:09:09 Etc/GMT",
+                        @"product_id": @"${productId}",
+                        @"original_purchase_date_pst": @"2023-09-09 02:09:10 America/Los_Angeles",
+                        @"in_app_ownership_type": @"PURCHASED",
+                        @"original_purchase_date_ms": @"1694250550000",
+                        @"purchase_date_pst": @"2023-09-09 02:09:09 America/Los_Angeles",
+                        @"original_purchase_date": @"2023-09-09 09:09:10 Etc/GMT"
+                    }
+                ],
+                @"adam_id": @6476010032,
+                @"receipt_creation_date_pst": @"2023-09-09 06:06:26 America/Los_Angeles",
+                @"request_date": @"2023-09-09 16:06:27 Etc/GMT",
+                @"request_date_pst": @"2023-09-09 06:06:27 America/Los_Angeles",
+                @"version_external_identifier": @867662336,
+                @"request_date_ms": @"1694273635000",
+                @"original_purchase_date_pst": @"2023-09-09 06:00:00 America/Los_Angeles",
+                @"application_version": @"1",
+                @"original_purchase_date_ms": @"1694273430000",
+                @"receipt_creation_date_ms": @"1694273634000",
+                @"download_id": @503581304622034000
+            },
+            @"latest_receipt_info": @[
+                @{
+                    @"quantity": @"1",
+                    @"purchase_date_ms": @"1694250549000",
+                    @"transaction_id": @"490001314520000",
+                    @"is_trial_period": @"false",
+                    @"original_transaction_id": @"490001314520000",
+                    @"purchase_date": @"2023-09-09 09:09:09 Etc/GMT",
+                    @"product_id": @"${productId}",
+                    @"original_purchase_date_pst": @"2023-09-09 02:09:10 America/Los_Angeles",
+                    @"in_app_ownership_type": @"PURCHASED",
+                    @"original_purchase_date_ms": @"1694250550000",
+                    @"purchase_date_pst": @"2023-09-09 02:09:09 America/Los_Angeles",
+                    @"original_purchase_date": @"2023-09-09 09:09:10 Etc/GMT"
+                }
+            ],
+            @"latest_receipt": @"iosrxwy",
+            @"environment": @"Production",
+            @"pending_renewal_info": @[
+                @{
+                    @"product_id": @"${productId}",
+                    @"original_transaction_id": @"490001314520000",
+                    @"auto_renew_product_id": @"${productId}",
+                    @"auto_renew_status": @"1"
+                }
+            ],
+            @"warning": @"iOS宝藏免费分享，严禁售卖",
+            @"Telegram": @"https://t.me/iosrxwy"
+        };
+data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:0];
+  } 
+
+  completionHandler(data, response, error);
+ };
+ return %orig(request, customCompletion);
+}
+%end`;
+
+            var resultCode = templateCode.replace(/\${productId}/g, productId).replace(/\${bundleId}/g, bundleId);
+
+            var resultElement = document.getElementById('result');
+            resultElement.textContent = resultCode;
+
+            document.getElementById('copyButton').style.display = 'inline';
+        }
+
+        function copyToClipboard() {
+            var resultElement = document.getElementById('result');
+            var range = document.createRange();
+            range.selectNode(resultElement);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            alert('Code copied to clipboard!');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Template Code Generator</h1>
+        <form onsubmit="generateCode(); return false;">
+            <div class="form-group">
+                <label for="productId">Product ID:</label>
+                <input type="text" id="productId" required>
+            </div>
+            <div class="form-group">
+                <label for="bundleId">Bundle ID:</label>
+                <input type="text" id="bundleId" required>
+            </div>
+            <button type="submit">Generate Code</button>
+        </form>
+        <h2>Generated Code:</h2>
+        <pre id="result"></pre>
+        <button id="copyButton" onclick="copyToClipboard()" style="display: none;">Copy to Clipboard</button>
+    </div>
+</body>
+</html>

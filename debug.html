@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Navigation with Snowfall</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            max-width: 800px;
+            width: 100%; 
+            margin-top: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .time {
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #555;
+        }
+        .visitor-count {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+        .button {
+            display: block;
+            margin: 10px auto;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: #ffffff;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            max-width: 300px;
+            width: 100%; 
+        }
+        .button:hover {
+            background: linear-gradient(45deg, #0056b3, #003d7a);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            background: red; 
+            opacity: 0.9;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall linear;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>常用脚本转换代码 URLs</h1>
+        <div class="time" id="currentTime"></div>
+        <div class="visitor-count" id="visitorCount"></div>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/iTunes-objc.html" class="button" target="_blank">iTunes-objc脚本转换</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/script-objc.html" class="button" target="_blank">script-objc</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/iTunes.html" class="button" target="_blank">Go to iTunes</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/HttpAsynConnection.html" class="button" target="_blank">HttpAsynConnection</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/verifyReceipt.html" class="button" target="_blank">verifyReceipt</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/" class="button" target="_blank">json数据转objc</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/SessionDelegate.html" class="button" target="_blank">SessionDelegate</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/AFURLSessionManager.html" class="button" target="_blank">AFURLSessionManager</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/AFHTTPRequestOperation.html" class="button" target="_blank">AFHTTPRequestOperation</a>
+        <a href="https://ruiqicwbjzx.github.io/objc.github.io/requestheader.html" class="button" target="_blank">请求头参数替换脚本</a>
+    </div>
+
+    <script>
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random() * 0.5 + 0.5;
+            document.body.appendChild(snowflake);
+
+            snowflake.addEventListener('animationend', () => {
+                document.body.removeChild(snowflake);
+            });
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString(undefined, options);
+        }
+
+        function updateVisitorCount() {
+            let count = localStorage.getItem('visitCount') || 0;
+            count++;
+            localStorage.setItem('visitCount', count);
+            document.getElementById('visitorCount').textContent = `Visitors today: ${count}`;
+        }
+
+        setInterval(createSnowflake, 100);
+        setInterval(updateTime, 1000);
+        updateTime(); 
+        updateVisitorCount(); 
+    </script>
+</body>
+</html>
