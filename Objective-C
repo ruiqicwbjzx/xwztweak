@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objective-C 代码生成</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        pre {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow: auto;
+            white-space: pre-wrap; /* 允许换行 */
+        }
+        textarea {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>生成的 Objective-C 代码</h1>
+
+<!-- JSON 输入区域 -->
+<h2>输入 JSON 数据</h2>
+<textarea id="jsonInput" placeholder="请输入 JSON 数据..."></textarea>
+<button id="generateFromJsonButton">生成代码</button>
+
+<!-- Objective-C 数据输入区域 -->
+<h2>输入转换后的 Objective-C 数据</h2>
+<textarea id="objcDataInput" placeholder="例如：@{ @"magic_tag": @"ss_app_log", @"message": @"success", @"server_time": @1722944119 }"></textarea>
+<button id="generateFromObjcButton">生成代码</button>
+
+<h2>输入需要匹配的 URL 路径</h2>
+<textarea id="urlMatchInput" placeholder="请输入需要匹配的 URL 路径..."></textarea>
+
+<button id="copyButton">复制代码</button>
+
+<h2>生成的代码</h2>
+<pre id="outputCode"></pre>
+
+<script>
+    function updateOutputCode(code) {
+        document.getElementById('outputCode').textContent = code;
+        localStorage.setItem('generatedCode', code);
+    }
+
+    function loadSavedCode() {
+        const savedCode = localStorage.getItem('generatedCode');
+        if (savedCode) {
+            document.getElementById('outputCode').textContent = savedCode;
+        }
+    }
+
+    function generateCodeFromJson(jsonInput, urlMatchInput) {
+        try {
+            const data = JSON.parse(jsonInput);
+            let replacements = {};
+            for (const rule of data.rules) {
+                const matchValue = rule.matchValue;
+                const value = rule.value;
+                replacements[matchValue] = value;
+            }
+
+            let objcCode = `
+#import <Foundation/Foundation.h>
+
+%hook MEIQIA_AFHTTPRequestOperation
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    NSURLRequest *originalRequest = [connection originalRequest];
+    NSString *urlString = [[originalRequest URL] absoluteString];
+    
+    if ([urlString containsString:@"${urlMatchInput}"]) {
+        NSDictionary *dict = @{
+`;
+
+            for (const matchValue in replacements) {
+                objcCode += `            @\"${matchValue}\" : ${replacements[matchValue]},\n`;
+            }
+
+            objcCode += `
+        };
+
+        NSError *error = nil;
+        NSData *modifiedData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+        if (!error) {
+            %orig(connection, modifiedData);
+        } else {
+            %orig(connection, data);
+        }
+    } else {
+        %orig(connection, data);
+    }
+}
+
+%end
+`;
+
+            updateOutputCode(objcCode);
+        } catch (error) {
+            updateOutputCode('错误: 无法解析 JSON 数据');
+        }
+    }
+
+    function generateCodeFromObjc(objcDataInput, urlMatchInput) {
+        let objcCode = `
+#import <Foundation/Foundation.h>
+
+%hook MEIQIA_AFHTTPRequestOperation
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    NSURLRequest *originalRequest = [connection originalRequest];
+    NSString *urlString = [[originalRequest URL] absoluteString];
+    
+    if ([urlString containsString:@"${urlMatchInput}"]) {
+        NSDictionary *dict = @{
+            ${objcDataInput}
+        };
+
+        NSError *error = nil;
+        NSData *modifiedData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+        if (!error) {
+            %orig(connection, modifiedData);
+        } else {
+            %orig(connection, data);
+        }
+    } else {
+        %orig(connection, data);
+    }
+}
+
+%end
+`;
+
+        // 替换 URL 匹配字符串
+        objcCode = objcCode.replace('${urlMatchInput}', urlMatchInput.trim());
+
+        updateOutputCode(objcCode);
+    }
+
+    document.getElementById('generateFromJsonButton').onclick = function() {
+        const jsonInput = document.getElementById('jsonInput').value;
+        const urlMatchInput = document.getElementById('urlMatchInput').value;
+
+        generateCodeFromJson(jsonInput, urlMatchInput);
+    };
+
+    document.getElementById('generateFromObjcButton').onclick = function() {
+        const objcDataInput = document.getElementById('objcDataInput').value;
+        const urlMatchInput = document.getElementById('urlMatchInput').value;
+
+        generateCodeFromObjc(objcDataInput, urlMatchInput);
+    };
+
+    document.getElementById('copyButton').onclick = function() {
+        const outputCode = document.getElementById('outputCode').textContent;
+
+        if (outputCode) {
+            navigator.clipboard.writeText(outputCode).then(() => {
+                alert('代码已复制到剪贴板！');
+            }).catch(err => {
+                alert('复制失败: ', err);
+            });
+        } else {
+            alert('没有可复制的代码！');
+        }
+    };
+
+    // 在页面加载时加载保存的代码
+    window.onload = loadSavedCode;
+</script>
+
+</body>
+</html>
